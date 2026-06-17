@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Build outputs
+dist/
+build/
+out/
+.vercel/
+.railway/
+coverage/
+
+# TypeScript and Vite cache
+*.tsbuildinfo
+.vite/
+.vite-temp/
+
+# Prisma generated/runtime artifacts
+node_modules/.prisma/
+**/node_modules/.prisma/
+apps/api/generated/
+apps/api/src/generated/
+*.db
+*.db-journal
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo

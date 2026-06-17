@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Creator {
+  id          String        @id @default(cuid())
+  blazeId     String        @unique
+  displayName String
+  avatarUrl   String
+  createdAt   DateTime      @default(now())
+  snapshots   Snapshot[]
+  activities  Activity[]
+  healthScore HealthScore?
+}
+
+model Snapshot {
+  id              String   @id @default(cuid())
+  creatorId       String
+  followerCount   Int
+  subscriberCount Int
+  viewerCount     Int
+  createdAt       DateTime @default(now())
+  creator         Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId, createdAt])
+}
+
+model Activity {
+  id        String   @id @default(cuid())
+  creatorId String
+  type      String
+  actorId   String
+  createdAt DateTime @default(now())
+  creator   Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([creatorId, createdAt])
+}
+
+model HealthScore {
+  id        String   @id @default(cuid())
+  creatorId String   @unique
+  score     Int
+  updatedAt DateTime @updatedAt
+  creator   Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+}
