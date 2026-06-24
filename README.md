@@ -1,57 +1,101 @@
-# Blaze Creator OS
+# Blaze Creator Intelligence
 
-Blaze Creator OS is a workspace built for creators on Blaze.
+Blaze Creator Intelligence is an analytics and decision-support platform I built for creators on Blaze.
 
-Streaming platforms provide the tools to go live. Managing a growing community is a different challenge.
+Streaming platforms provide the tools to go live. Understanding what happened, why it matters, and what to do next is a different challenge. Creator signals are often scattered across live statistics, audience activity, growth history, and community events.
 
-Creators often need to keep track of followers, subscribers, activity, moderation, and performance across multiple screens. Important community activity gets buried, growth trends are hard to spot, and there is no single place to understand what is happening inside a channel.
+I built Blaze Creator Intelligence to bring those signals together and turn them into useful direction.
 
-Blaze Creator OS brings everything together in one place.
+Creators can monitor live performance, understand audience behavior, track growth, review channel health, compare emerging ecosystem benchmarks, and receive actionable recommendations from one focused workspace.
 
-From a single dashboard, creators can monitor their stream, follow community activity in real time, track audience growth, manage moderation, and gain a clearer picture of how their channel is performing.
+My goal is simple:
 
-The goal is simple:
+Help creators spend less time interpreting dashboards and more time making confident growth decisions.
 
-Help creators spend less time managing tools and more time building their communities.
+## Product Vision
 
-## What Blaze Creator OS Helps With
+I want Blaze Creator Intelligence to become the intelligence layer creators open before, during, and after every stream.
+
+## Core Experiences
+
+- Live creator analytics
+- Audience intelligence
+- Growth intelligence
+- Creator Health Score
+- Creator Intelligence brief
+- Ecosystem benchmark research
+- Signal-focused notifications
+- Historical trend detection
+
+## How It Helps
 
 ### Understand
 
-See what is happening across your channel in real time.
+See what is happening across a channel in real time. Follow viewers, followers, subscribers, stream status, and community activity without moving between disconnected tools.
 
-Track followers, subscribers, viewers, and community activity without jumping between multiple pages.
+### Decide
 
-### Manage
-
-Keep community operations organized from one workspace.
-
-Monitor activity, manage moderation actions, and stay on top of what matters most.
+Turn stored history and live signals into clear explanations: what changed, why it matters, and what action deserves attention next.
 
 ### Grow
 
-Turn raw numbers into useful insights.
+Track performance over time, understand audience efficiency and conversion, identify momentum, and compare developing channel signals with the broader Blaze ecosystem.
 
-Track growth over time, understand audience trends, and identify opportunities to improve engagement.
+## Technology
 
-## Why We Built It
+### Frontend
 
-Blaze has created a powerful platform for creators and communities.
+- React
+- Vite
+- TypeScript
+- Tailwind CSS
+- React Router
+- TanStack Query
+- Recharts
+- Socket.IO Client
 
-We wanted to build something that helps creators make better use of the data and activity already available within their channels.
+### Backend
 
-Instead of another analytics dashboard, we focused on creating a practical operating system that supports creators throughout their day to day workflow.
+- Node.js
+- Express
+- TypeScript
+- Prisma
+- PostgreSQL
+- Socket.IO
 
-## Core Features
+### Platform
 
-* Live Creator Command Center
-* Real Time Community Activity Feed
-* Audience Growth Tracking
-* Subscriber Insights
-* Creator Health Score
-* Community Management Tools
-* Growth Intelligence Dashboard
+- Blaze OAuth
+- Blaze APIs and EventSub
+- Neon PostgreSQL
+- Vercel-ready frontend
+- Railway-ready API
 
-## Vision
+## Local Installation
 
-To become the central workspace creators open before, during, and after every stream.
+```bash
+npm install
+```
+
+Create environment files from the supplied examples:
+
+```powershell
+Copy-Item apps/api/.env.example apps/api/.env
+Copy-Item apps/web/.env.example apps/web/.env
+```
+
+Configure Blaze credentials and `DATABASE_URL`, then prepare the database:
+
+```bash
+npm run prisma:generate --workspace @blaze/api
+npm run prisma:migrate --workspace @blaze/api
+npm run prisma:seed --workspace @blaze/api
+```
+
+Start the application:
+
+```bash
+npm run dev
+```
+
+The web app runs at `http://localhost:5173` and the API at `http://localhost:4000`.
