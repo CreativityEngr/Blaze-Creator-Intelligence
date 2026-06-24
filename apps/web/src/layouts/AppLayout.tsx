@@ -18,10 +18,20 @@ const navigation: NavigationItem[] = [
   { label: "Settings", href: "/settings", icon: Settings }
 ];
 
+function getPublicUsername(creator?: { username?: string | null; blazeId?: string | null }) {
+  const username = creator?.username?.trim();
+  if (!username) return null;
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(username)) return null;
+  if (username === creator?.blazeId) return null;
+  if (!/^[a-zA-Z0-9_.-]{2,32}$/.test(username)) return null;
+  return username.startsWith("@") ? username : `@${username}`;
+}
+
 export function AppLayout() {
   const { data, isError: isCreatorError } = useDashboard();
   const { theme, toggleTheme } = useTheme();
   const creator = data?.creator;
+  const publicUsername = getPublicUsername(creator);
 
   return (
     <div className="min-h-screen bg-background text-ink">
@@ -87,9 +97,11 @@ export function AppLayout() {
                   <p className="text-sm font-medium">
                     {creator?.displayName ?? (isCreatorError ? "Creator unavailable" : "Preparing profile")}
                   </p>
-                  <p className="text-xs text-muted">
-                    {creator ? `@${creator.blazeId}` : isCreatorError ? "Profile unavailable" : "One moment"}
-                  </p>
+                  {!creator || isCreatorError || publicUsername ? (
+                    <p className="text-xs text-muted">
+                      {creator ? publicUsername : isCreatorError ? "Profile unavailable" : "One moment"}
+                    </p>
+                  ) : null}
                 </div>
                 <Button
                   aria-label="Log out"
