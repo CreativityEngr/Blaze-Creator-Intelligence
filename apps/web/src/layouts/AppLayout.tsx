@@ -1,30 +1,36 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { Activity, BarChart3, Gauge, LayoutDashboard, Search, Settings, Users } from "lucide-react";
+import { BarChart3, Gauge, LayoutDashboard, LogOut, Moon, Settings, Sun, UserRoundSearch, Users } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import type { NavigationItem } from "@/types/navigation";
 import { cn } from "@/lib/utils";
+import { useDashboard } from "@/hooks/useCreatorInsights";
+import { useTheme } from "@/hooks/useTheme";
+import { NotificationCenter } from "@/components/NotificationCenter";
+import { BrandMark } from "@/components/BrandMark";
 
 const navigation: NavigationItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
   { label: "Community", href: "/community", icon: Users },
   { label: "Growth", href: "/growth", icon: BarChart3 },
+  { label: "Audience", href: "/audience", icon: UserRoundSearch },
   { label: "Health Score", href: "/health", icon: Gauge },
   { label: "Settings", href: "/settings", icon: Settings }
 ];
 
 export function AppLayout() {
+  const { data, isError: isCreatorError } = useDashboard();
+  const { theme, toggleTheme } = useTheme();
+  const creator = data?.creator;
+
   return (
     <div className="min-h-screen bg-background text-ink">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-line bg-surface/96 px-4 py-5 backdrop-blur xl:block">
+      <aside className="app-sidebar fixed inset-y-0 left-0 z-30 hidden w-72 border-r px-4 py-5 backdrop-blur xl:block">
         <div className="mb-8 flex items-center gap-3 px-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-md border border-blaze/30 bg-blaze/10 text-sm font-bold text-blaze">
-            B
-          </div>
+          <BrandMark />
           <div>
-            <p className="text-sm font-semibold">Blaze Creator OS</p>
-            <p className="text-xs text-muted">Creator command center</p>
+            <p className="text-sm font-semibold">Blaze Creator Intelligence</p>
+            <p className="text-xs text-muted">Creator intelligence platform</p>
           </div>
         </div>
 
@@ -35,72 +41,78 @@ export function AppLayout() {
               to={item.href}
               className={({ isActive }) =>
                 cn(
-                  "flex h-11 items-center gap-3 rounded-md px-3 text-sm text-muted transition hover:bg-white/[0.05] hover:text-ink",
-                  isActive && "border border-line bg-white/[0.06] text-ink shadow-[0_10px_30px_rgba(0,0,0,0.2)]"
+                  "nav-item flex h-11 items-center gap-2 rounded-md px-2 text-sm text-muted transition hover:text-ink",
+                  isActive && "nav-item-active text-ink"
                 )
               }
             >
-              <item.icon className="h-4 w-4" />
+              <span className="nav-icon">
+                <item.icon className="h-4 w-4" />
+              </span>
               {item.label}
             </NavLink>
           ))}
         </nav>
 
-        <div className="absolute bottom-5 left-4 right-4 rounded-lg border border-line bg-card p-4">
-          <div className="mb-3 flex items-center gap-2 text-sm font-medium">
-            <Activity className="h-4 w-4 text-blaze" />
-            Live telemetry
-          </div>
-          <p className="text-xs leading-5 text-muted">
-            Mock Blaze events are wired through the API and ready for the real event stream.
-          </p>
-        </div>
       </aside>
 
       <div className="xl:pl-72">
-        <header className="sticky top-0 z-20 border-b border-line bg-background/82 backdrop-blur-xl">
-          <div className="flex min-h-16 flex-col gap-3 px-4 py-3 md:flex-row md:items-center md:px-8">
+        <header className="top-shell sticky top-0 z-20 border-b backdrop-blur-xl">
+          <div className="flex min-h-16 items-center justify-between gap-3 px-4 py-3 md:px-8">
             <div className="flex items-center justify-between gap-3 xl:hidden">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-md border border-blaze/30 bg-blaze/10 text-sm font-bold text-blaze">
-                  B
-                </div>
-                <span className="text-sm font-semibold">Blaze Creator OS</span>
+                <BrandMark />
+                <span className="text-sm font-semibold">Blaze Creator Intelligence</span>
               </div>
             </div>
 
-            <div className="relative flex-1 md:max-w-xl">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-              <Input className="pl-9" placeholder="Search audience, activities, streams" />
-            </div>
-
-            <div className="flex items-center justify-between gap-3 md:ml-auto">
-              <Button size="sm" variant="ghost">
-                <Activity className="h-4 w-4" />
-                Live
+            <div className="ml-auto flex min-w-0 items-center justify-end gap-2 sm:gap-3">
+              <Button
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+                title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+                size="icon"
+                variant="ghost"
+                onClick={toggleTheme}
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4 text-blaze" /> : <Moon className="h-4 w-4 text-blaze" />}
               </Button>
-              <div className="flex items-center gap-3 rounded-md border border-line bg-white/[0.04] px-3 py-2">
-                <Avatar
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=160&q=80"
-                  alt="Aria Lane"
-                />
+              <NotificationCenter />
+              <div className="profile-cluster flex min-w-0 items-center gap-3 py-1">
+                {creator ? (
+                  <Avatar src={creator.avatarUrl} alt={creator.displayName} />
+                ) : (
+                  <div className="h-9 w-9 animate-pulse rounded-full border border-line bg-white/[0.06]" />
+                )}
                 <div className="hidden sm:block">
-                  <p className="text-sm font-medium">Aria Lane</p>
-                  <p className="text-xs text-muted">@aria.blaze</p>
+                  <p className="text-sm font-medium">
+                    {creator?.displayName ?? (isCreatorError ? "Creator unavailable" : "Preparing profile")}
+                  </p>
+                  <p className="text-xs text-muted">
+                    {creator ? `@${creator.blazeId}` : isCreatorError ? "Profile unavailable" : "One moment"}
+                  </p>
                 </div>
+                <Button
+                  aria-label="Log out"
+                  title="Log out"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => window.location.assign("/logout")}
+                >
+                  <LogOut className="h-4 w-4 text-blaze" />
+                </Button>
               </div>
             </div>
           </div>
 
-          <nav className="flex gap-2 overflow-x-auto px-4 pb-3 xl:hidden">
+          <nav className="mobile-navigation grid grid-cols-3 gap-2 px-4 pb-3 sm:grid-cols-6 xl:hidden">
             {navigation.map((item) => (
               <NavLink
                 key={item.href}
                 to={item.href}
                 className={({ isActive }) =>
-                  cn(
-                    "flex h-9 shrink-0 items-center gap-2 rounded-md border border-transparent px-3 text-xs text-muted",
-                    isActive && "border-line bg-white/[0.06] text-ink"
+                cn(
+                    "nav-item flex h-10 min-w-0 items-center justify-center gap-2 rounded-md px-2 text-xs text-muted",
+                    isActive && "nav-item-active text-ink"
                   )
                 }
               >
@@ -111,8 +123,8 @@ export function AppLayout() {
           </nav>
         </header>
 
-        <main className="premium-grid min-h-[calc(100vh-4rem)] px-4 py-6 md:px-8 lg:py-8">
-          <div className="mx-auto max-w-7xl">
+        <main className="premium-grid min-h-[calc(100vh-4rem)] min-w-0 px-4 py-6 md:px-8 lg:py-8">
+          <div className="mx-auto min-w-0 max-w-7xl">
             <Outlet />
           </div>
         </main>
