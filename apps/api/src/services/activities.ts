@@ -1,14 +1,9 @@
-import type { Activity } from "@blaze/shared";
-import { mockActivities } from "../utils/mockData.js";
-
-export interface ActivitiesService {
-  listRecentActivities(creatorId: string): Promise<Activity[]>;
-}
-
-export class MockActivitiesService implements ActivitiesService {
-  async listRecentActivities(_creatorId: string) {
-    return mockActivities;
+import { config } from "../config.js";
+import { blazeApiClient } from "./blazeClient.js";
+export class BlazeActivityService {
+  async list(channelId: string) {
+    const result = await blazeApiClient.get<any[] | { rows?: any[] }>(channelId, config.BLAZE_ACTIVITIES_PATH, { limit: "20" });
+    return Array.isArray(result) ? result : result.rows ?? [];
   }
 }
-
-export const activitiesService = new MockActivitiesService();
+export const blazeActivityService = new BlazeActivityService();

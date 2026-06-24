@@ -12,7 +12,8 @@ export function createApp() {
   app.use(helmet());
   app.use(
     cors({
-      origin: process.env.WEB_ORIGIN ?? "http://localhost:5173"
+      origin: process.env.WEB_ORIGIN ?? "http://localhost:5173",
+      credentials: true
     })
   );
   app.use(express.json());
@@ -24,6 +25,13 @@ export function createApp() {
 
   app.use("/api/auth", authRouter);
   app.use("/api", insightsRouter);
+  app.use("/api", (_request, response) => {
+    response.status(404).json({
+      error: {
+        message: "API route not found"
+      }
+    });
+  });
   app.use(errorHandler);
 
   return app;

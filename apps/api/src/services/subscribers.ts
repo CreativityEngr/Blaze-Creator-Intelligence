@@ -1,14 +1,9 @@
-import type { CommunityMember } from "@blaze/shared";
-import { mockSubscribers } from "../utils/mockData.js";
-
-export interface SubscribersService {
-  listRecentSubscribers(creatorId: string): Promise<CommunityMember[]>;
-}
-
-export class MockSubscribersService implements SubscribersService {
-  async listRecentSubscribers(_creatorId: string) {
-    return mockSubscribers;
+import { config } from "../config.js";
+import { blazeApiClient } from "./blazeClient.js";
+export class BlazeSubscriberService {
+  async list(channelId: string) {
+    const result = await blazeApiClient.get<any[] | { rows?: any[] }>(channelId, config.BLAZE_SUBSCRIBERS_PATH, { limit: "20" });
+    return Array.isArray(result) ? result : result.rows ?? [];
   }
 }
-
-export const subscribersService = new MockSubscribersService();
+export const blazeSubscriberService = new BlazeSubscriberService();

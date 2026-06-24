@@ -2,7 +2,7 @@
   "name": "blaze-creator-os",
   "version": "0.1.0",
   "private": true,
-  "description": "A workspace built for creators on Blaze.",
+  "description": "Creator analytics and decision intelligence built for Blaze creators.",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -11,7 +11,7 @@
     "dev": "npm run dev --workspace @blaze/web",
     "dev:web": "npm run dev --workspace @blaze/web",
     "dev:api": "npm run dev --workspace @blaze/api",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspace @blaze/shared && npm run build --workspace @blaze/api && npm run build --workspace @blaze/web",
     "typecheck": "npm run typecheck --workspaces",
     "prisma:generate": "npm run prisma:generate --workspace @blaze/api"
   },

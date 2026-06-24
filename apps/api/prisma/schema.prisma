@@ -7,44 +7,250 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Creator {
-  id          String        @id @default(cuid())
-  blazeId     String        @unique
-  displayName String
-  avatarUrl   String
-  createdAt   DateTime      @default(now())
-  snapshots   Snapshot[]
-  activities  Activity[]
-  healthScore HealthScore?
+enum ActivityType {
+  FOLLOW
+  SUBSCRIBE
+  RENEWAL
+  COMMUNITY_POST
+  STREAM_STARTED
+  STREAM_ENDED
+  OTHER
 }
 
-model Snapshot {
-  id              String   @id @default(cuid())
-  creatorId       String
-  followerCount   Int
-  subscriberCount Int
-  viewerCount     Int
-  createdAt       DateTime @default(now())
-  creator         Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+enum InsightKind {
+  CREATOR_BRIEF
+  PRIORITY
+  GROWTH
+}
 
-  @@index([creatorId, createdAt])
+enum NotificationKind {
+  EVENT
+  INSIGHT
+  TREND
+  SYSTEM
+}
+
+model User {
+  id          String    @id @default(cuid())
+  blazeUserId String    @unique
+  displayName String
+  avatarUrl   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  channels    Channel[]
+  sessions    Session[]
+
+  @@map("users")
+}
+
+model Channel {
+  id                  String                @id @default(cuid())
+  userId              String
+  blazeChannelId      String                @unique
+  displayName         String
+  avatarUrl           String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credential          ChannelCredential?
+  channelStats        ChannelStatsSnapshot[]
+  followerSnapshots   FollowerSnapshot[]
+  subscriberSnapshots SubscriberSnapshot[]
+  activities          Activity[]
+  healthScores        HealthScore[]
+  insights            Insight[]
+  notifications       Notification[]
+
+  @@index([userId])
+  @@map("channels")
+}
+
+model ChannelCredential {
+  id                    String   @id @default(cuid())
+  channelId             String   @unique
+  encryptedAccessToken  String
+  encryptedRefreshToken String?
+  tokenExpiresAt        DateTime?
+  scopes                String[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  channel               Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@map("channel_credentials")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("sessions")
+}
+
+model OAuthState {
+  id           String   @id @default(cuid())
+  stateHash    String   @unique
+  codeVerifier String?
+  returnTo     String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@map("oauth_states")
+}
+
+model ChannelStatsSnapshot {
+  id            String   @id @default(cuid())
+  channelId     String
+  viewerCount   Int
+  isLive        Boolean
+  streamTitle   String?
+  streamCategory String?
+  streamStartedAt DateTime?
+  capturedAt    DateTime @default(now())
+  channel       Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, capturedAt])
+  @@map("channel_stats_snapshots")
+}
+
+model FollowerSnapshot {
+  id        String   @id @default(cuid())
+  channelId String
+  count     Int
+  capturedAt DateTime @default(now())
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, capturedAt])
+  @@map("followers_snapshots")
+}
+
+model SubscriberSnapshot {
+  id        String   @id @default(cuid())
+  channelId String
+  count     Int
+  capturedAt DateTime @default(now())
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, capturedAt])
+  @@map("subscriber_snapshots")
 }
 
 model Activity {
-  id        String   @id @default(cuid())
-  creatorId String
-  type      String
-  actorId   String
-  createdAt DateTime @default(now())
-  creator   Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  id              String       @id @default(cuid())
+  channelId       String
+  blazeActivityId String?      @unique
+  type            ActivityType
+  actorId         String?
+  actorName       String?
+  label           String
+  payload         Json?
+  occurredAt      DateTime
+  createdAt       DateTime     @default(now())
+  channel         Channel      @relation(fields: [channelId], references: [id], onDelete: Cascade)
 
-  @@index([creatorId, createdAt])
+  @@index([channelId, occurredAt])
+  @@map("activities")
 }
 
 model HealthScore {
-  id        String   @id @default(cuid())
-  creatorId String   @unique
-  score     Int
-  updatedAt DateTime @updatedAt
-  creator   Creator  @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  channelId    String
+  score        Int
+  grade        String
+  contributors Json
+  insight      String
+  calculatedAt DateTime @default(now())
+  channel      Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, calculatedAt])
+  @@map("health_scores")
+}
+
+model Insight {
+  id        String      @id @default(cuid())
+  channelId String
+  kind      InsightKind
+  title     String
+  body      String
+  metadata  Json?
+  createdAt DateTime    @default(now())
+  expiresAt DateTime?
+  channel   Channel     @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, kind, createdAt])
+  @@map("insights")
+}
+
+model BenchmarkRun {
+  id                   String                     @id @default(cuid())
+  cohort               String
+  creatorCount         Int
+  distinctCreatorCount Int
+  liveCreatorCount     Int
+  volatility           Float?
+  confidence           Float
+  capturedAt           DateTime                   @default(now())
+  observations         BenchmarkChannelSnapshot[]
+  percentiles          BenchmarkPercentile[]
+
+  @@index([cohort, capturedAt])
+  @@map("benchmark_runs")
+}
+
+model BenchmarkChannelSnapshot {
+  id                String       @id @default(cuid())
+  runId             String
+  blazeChannelId    String
+  category          String?
+  isLive            Boolean
+  followerCount     Int
+  subscriberCount   Int
+  viewerCount       Int
+  vodCount          Int
+  viewerFollowerRate Float?
+  subscriberFollowerRate Float?
+  capturedAt        DateTime     @default(now())
+  run               BenchmarkRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, blazeChannelId])
+  @@index([blazeChannelId, capturedAt])
+  @@map("benchmark_channel_snapshots")
+}
+
+model BenchmarkPercentile {
+  id         String       @id @default(cuid())
+  runId      String
+  metric     String
+  sampleSize Int
+  p10        Float?
+  p25        Float?
+  p50        Float?
+  p75        Float?
+  p90        Float?
+  mean       Float?
+  stdDev     Float?
+  run        BenchmarkRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@unique([runId, metric])
+  @@index([metric])
+  @@map("benchmark_percentiles")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  channelId String
+  kind      NotificationKind
+  title     String
+  body      String
+  metadata  Json?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+  channel   Channel          @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, readAt, createdAt])
+  @@map("notifications")
 }

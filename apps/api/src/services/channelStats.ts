@@ -1,22 +1,14 @@
-import type { Snapshot } from "@blaze/shared";
-import { mockCreator, mockStream } from "../utils/mockData.js";
+import { config } from "../config.js";
+import { blazeApiClient } from "./blazeClient.js";
 
-export interface ChannelStatsService {
-  getLatestSnapshot(creatorId: string): Promise<Snapshot>;
-}
-
-export class MockChannelStatsService implements ChannelStatsService {
-  async getLatestSnapshot(creatorId: string) {
+export class BlazeChannelService {
+  async getStats(channelId: string) {
+    const stats = await blazeApiClient.get<any>(channelId, config.BLAZE_CHANNEL_PATH);
     return {
-      id: "snapshot_01",
-      creatorId,
-      followerCount: mockStream.followers,
-      subscriberCount: mockStream.subscribers,
-      viewerCount: mockStream.currentViewers,
-      createdAt: new Date().toISOString()
+      followers: Number(stats.followerCount ?? stats.followers ?? stats.follower_count ?? stats.followers_count ?? 0),
+      subscribers: Number(stats.subscriberCount ?? stats.subscribers ?? stats.subscriber_count ?? stats.subscribers_count ?? 0),
+      viewers: Number(stats.viewerCount ?? stats.viewers ?? stats.viewer_count ?? 0)
     };
   }
 }
-
-export const channelStatsService = new MockChannelStatsService();
-export const defaultCreatorId = mockCreator.id;
+export const blazeChannelService = new BlazeChannelService();
