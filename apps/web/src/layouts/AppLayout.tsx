@@ -100,10 +100,10 @@ export function AppLayout() {
                 ) : (
                   <div className="h-9 w-9 animate-pulse rounded-full border border-line bg-white/[0.06]" />
                 )}
-                <div className="hidden min-w-[9rem] sm:block">
+                <div className={cn("hidden sm:block", !creator && "min-w-28")}>
                   {creator ? (
                     <>
-                      <p className="text-sm font-medium">{creator.displayName}</p>
+                      <p className="max-w-24 truncate text-sm font-medium">{creator.displayName}</p>
                       {publicUsername ? <p className="text-xs text-muted">{publicUsername}</p> : null}
                     </>
                   ) : isCreatorError ? (
