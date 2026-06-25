@@ -18,7 +18,7 @@ The registered Blaze Creator Intelligence application used an official App Acces
 - A separate `type=live` query returned 20 currently live channels with no next cursor.
 - Channel stats and VOD availability were available for all 20 live channels.
 - Cross-channel follower lists and activity feeds returned `403`, so individual engagement activity is private to the authorized creator.
-- Blaze does not expose a public historical growth series. Growth velocity must be calculated from Creator OS snapshots.
+- Blaze does not expose a public historical growth series. Growth velocity must be calculated from Blaze Creator Intelligence snapshots.
 
 ## Current Live-Creator Snapshot
 
@@ -132,7 +132,7 @@ Quality should measure healthy operation rather than production budget or audien
 
 ## Data Collection Required
 
-Creator OS should build daily benchmark snapshots from public App Access Token endpoints:
+Blaze Creator Intelligence should build daily benchmark snapshots from public App Access Token endpoints:
 
 - Channel directory
 - Channel stats

@@ -7,7 +7,7 @@ import { ApiClientError } from "@/services/apiClient";
 import { RealtimeQueryBridge } from "@/components/RealtimeQueryBridge";
 import "@/styles.css";
 
-const storedTheme = localStorage.getItem("blaze-creator-os-theme");
+const storedTheme = localStorage.getItem("blaze-creator-intelligence-theme");
 document.documentElement.dataset.theme = storedTheme === "light" ? "light" : "dark";
 document.documentElement.style.colorScheme = storedTheme === "light" ? "light" : "dark";
 

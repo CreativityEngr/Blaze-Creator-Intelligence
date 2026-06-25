@@ -16,7 +16,7 @@ export function BrandMark({
 }) {
   return (
     <img
-      src="/brand/blaze-creator-os-mark.png"
+      src="/brand/blaze-creator-intelligence-mark.png"
       alt="Blaze Creator Intelligence"
       className={cn("brand-logo shrink-0 object-contain", sizes[size], className)}
     />

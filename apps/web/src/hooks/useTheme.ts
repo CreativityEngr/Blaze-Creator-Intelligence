@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export type Theme = "dark" | "light";
 
-const storageKey = "blaze-creator-os-theme";
+const storageKey = "blaze-creator-intelligence-theme";
 
 function getInitialTheme(): Theme {
   const storedTheme = localStorage.getItem(storageKey);
