@@ -100,15 +100,20 @@ export function AppLayout() {
                 ) : (
                   <div className="h-9 w-9 animate-pulse rounded-full border border-line bg-white/[0.06]" />
                 )}
-                <div className="hidden sm:block">
-                  <p className="text-sm font-medium">
-                    {creator?.displayName ?? (isCreatorError ? "Creator unavailable" : "Preparing profile")}
-                  </p>
-                  {!creator || publicUsername ? (
-                    <p className="text-xs text-muted">
-                      {creator ? publicUsername : "One moment"}
-                    </p>
-                  ) : null}
+                <div className="hidden min-w-[9rem] sm:block">
+                  {creator ? (
+                    <>
+                      <p className="text-sm font-medium">{creator.displayName}</p>
+                      {publicUsername ? <p className="text-xs text-muted">{publicUsername}</p> : null}
+                    </>
+                  ) : isCreatorError ? (
+                    <p className="text-sm font-medium text-muted">Profile unavailable</p>
+                  ) : (
+                    <div className="space-y-2" aria-label="Loading profile">
+                      <div className="h-3 w-28 animate-pulse rounded-full bg-gradient-to-r from-white/10 via-blaze/20 to-white/10 light:from-black/10 light:via-blaze/25 light:to-black/10" />
+                      <div className="h-2 w-20 animate-pulse rounded-full bg-white/10 light:bg-black/10" />
+                    </div>
+                  )}
                 </div>
                 <Button
                   aria-label="Log out"
