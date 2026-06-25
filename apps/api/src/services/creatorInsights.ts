@@ -87,12 +87,36 @@ export class CreatorInsightsService {
   private intelligence = new CreatorIntelligenceService();
 
   async getDashboard(channel: any): Promise<DashboardSummary> {
-    const [stats, stream, history, activities, growth] = await Promise.all([
-      blazeChannelService.getStats(channel.blazeChannelId),
-      blazeLiveService.getStream(channel.blazeChannelId),
+    const [history, activities, growth] = await Promise.all([
       channelRepository.history(channel.id, new Date(Date.now() - 30 * 86400_000)),
       channelRepository.recentActivities(channel.id),
       this.getGrowth(channel)
+    ]);
+    const latestStreamSnapshot = history[0].at(-1);
+    const latestFollowerSnapshot = history[1].at(-1);
+    const latestSubscriberSnapshot = history[2].at(-1);
+    const [stats, stream] = await Promise.all([
+      this.withFallback(
+        () => blazeChannelService.getStats(channel.blazeChannelId),
+        {
+          followers: latestFollowerSnapshot?.count ?? 0,
+          subscribers: latestSubscriberSnapshot?.count ?? 0,
+          viewers: latestStreamSnapshot?.viewerCount ?? 0
+        },
+        "channel stats"
+      ),
+      this.withFallback(
+        () => blazeLiveService.getStream(channel.blazeChannelId),
+        {
+          isLive: latestStreamSnapshot?.isLive ?? false,
+          title: latestStreamSnapshot?.streamTitle ?? "",
+          category: latestStreamSnapshot?.streamCategory ?? "",
+          currentViewers: latestStreamSnapshot?.viewerCount ?? 0,
+          durationSeconds: 0,
+          startedAt: latestStreamSnapshot?.streamStartedAt ?? undefined
+        },
+        "live stream"
+      )
     ]);
     const currentInsights = await this.buildDecisionInsights(channel, growth);
     const lastLiveSnapshot = history[0].filter((item) => item.isLive).at(-1);
@@ -129,6 +153,15 @@ export class CreatorInsightsService {
       followerDelta: await this.delta(channel.id, "followers"),
       subscriberDelta: await this.delta(channel.id, "subscribers")
     };
+  }
+
+  private async withFallback<T>(producer: () => Promise<T>, fallback: T, label: string) {
+    try {
+      return await producer();
+    } catch (error) {
+      console.warn(`Using persisted ${label} fallback`, error);
+      return fallback;
+    }
   }
 
   private inferCurrentStreamStart(

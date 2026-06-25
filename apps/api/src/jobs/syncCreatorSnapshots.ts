@@ -5,8 +5,12 @@ import { creatorInsightsService } from "../services/creatorInsights.js";
 import { blazeLiveService } from "../services/streamInfo.js";
 
 let timer: NodeJS.Timeout | undefined;
+let isRunning = false;
 
 export async function syncCreatorSnapshots() {
+  if (isRunning) return;
+  isRunning = true;
+  try {
   const channels = await channelRepository.listAll();
   for (const channel of channels) {
     if (!channel.credential) continue;
@@ -15,6 +19,9 @@ export async function syncCreatorSnapshots() {
     } catch (error) {
       console.error(`Snapshot sync failed for channel ${channel.id}`, error);
     }
+  }
+  } finally {
+    isRunning = false;
   }
 }
 
