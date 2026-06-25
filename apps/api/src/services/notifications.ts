@@ -2,7 +2,9 @@ import { channelRepository, notificationRepository } from "../repositories/index
 
 export class NotificationService {
   async list(channelId: string) {
-    await this.refreshSummaries(channelId);
+    await this.refreshSummaries(channelId).catch((error) => {
+      console.warn("Notification summaries skipped", error);
+    });
     const seenTitles = new Set<string>();
     const items = (await notificationRepository.list(channelId)).filter((item) => {
       if (item.kind === "EVENT" || seenTitles.has(item.title)) return false;

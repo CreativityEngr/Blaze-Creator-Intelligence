@@ -11,7 +11,23 @@ import type {
 } from "@blaze/shared";
 import { getApiData, postApi } from "@/services/apiClient";
 
+type SessionSummary = {
+  user: {
+    id: string;
+    displayName: string;
+    avatarUrl?: string | null;
+  };
+  channel: {
+    id: string;
+    blazeChannelId?: string;
+    displayName: string;
+    avatarUrl?: string | null;
+    username?: string | null;
+  };
+};
+
 export const creatorService = {
+  getSession: (signal?: AbortSignal) => getApiData<SessionSummary>("/auth/me", signal),
   getDashboard: (signal?: AbortSignal) => getApiData<DashboardSummary>("/dashboard", signal),
   getCommunity: (signal?: AbortSignal) => getApiData<CommunitySummary>("/community", signal),
   getGrowth: (range: AnalyticsRange, signal?: AbortSignal) => getApiData<GrowthSummary>(`/growth?range=${range}`, signal),

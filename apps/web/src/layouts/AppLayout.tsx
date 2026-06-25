@@ -4,7 +4,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { NavigationItem } from "@/types/navigation";
 import { cn } from "@/lib/utils";
-import { useDashboard } from "@/hooks/useCreatorInsights";
+import { useSession } from "@/hooks/useCreatorInsights";
 import { useTheme } from "@/hooks/useTheme";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { BrandMark } from "@/components/BrandMark";
@@ -28,9 +28,16 @@ function getPublicUsername(creator?: { username?: string | null; blazeId?: strin
 }
 
 export function AppLayout() {
-  const { data, isError: isCreatorError } = useDashboard();
+  const { data, isError: isCreatorError } = useSession();
   const { theme, toggleTheme } = useTheme();
-  const creator = data?.creator;
+  const creator = data?.channel
+    ? {
+        displayName: data.channel.displayName || data.user.displayName,
+        avatarUrl: data.channel.avatarUrl || data.user.avatarUrl || "",
+        username: data.channel.username,
+        blazeId: data.channel.blazeChannelId ?? data.channel.id
+      }
+    : undefined;
   const publicUsername = getPublicUsername(creator);
 
   return (
@@ -97,9 +104,9 @@ export function AppLayout() {
                   <p className="text-sm font-medium">
                     {creator?.displayName ?? (isCreatorError ? "Creator unavailable" : "Preparing profile")}
                   </p>
-                  {!creator || isCreatorError || publicUsername ? (
+                  {!creator || publicUsername ? (
                     <p className="text-xs text-muted">
-                      {creator ? publicUsername : isCreatorError ? "Profile unavailable" : "One moment"}
+                      {creator ? publicUsername : "One moment"}
                     </p>
                   ) : null}
                 </div>

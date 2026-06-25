@@ -2,6 +2,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { creatorService } from "@/services/creatorService";
 import type { AnalyticsRange } from "@blaze/shared";
 
+export function useSession() {
+  return useQuery({
+    queryKey: ["session"],
+    queryFn: ({ signal }) => creatorService.getSession(signal),
+    staleTime: 60_000,
+    refetchOnMount: "always"
+  });
+}
+
 export function useDashboard() {
   return useQuery({
     queryKey: ["dashboard"],
