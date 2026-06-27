@@ -75,7 +75,7 @@ export function LoginPage() {
               ))}
             </div>
 
-            <Button className="login-oauth-button mx-auto mt-9 h-14 w-full max-w-[26.75rem] justify-between px-6 text-base font-semibold sm:text-lg" onClick={() => window.location.assign(loginUrl)}>
+            <Button className="login-oauth-button mx-auto mt-9 h-14 w-full max-w-[22.5rem] justify-between px-5 text-base font-semibold sm:max-w-[23.5rem] sm:px-6 sm:text-lg" onClick={() => window.location.assign(loginUrl)}>
               <span className="truncate">Continue with Blaze</span>
               <ArrowRight className="h-5 w-5 shrink-0" />
             </Button>
