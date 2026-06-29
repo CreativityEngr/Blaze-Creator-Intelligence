@@ -53,7 +53,7 @@ export function LoginPage() {
               <div className="login-logo-fire" aria-hidden="true" />
               <BrandMark size="xl" className="relative z-10 mx-auto h-20 w-20 sm:h-24 sm:w-24" />
             </div>
-            <h1 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-normal sm:text-5xl">
+            <h1 className="mt-6 pb-1 text-4xl font-semibold leading-[1.14] tracking-normal sm:text-5xl">
               Blaze Creator
               <span className="login-title-accent block">Intelligence</span>
             </h1>
