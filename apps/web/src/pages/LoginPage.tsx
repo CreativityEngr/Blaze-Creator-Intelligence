@@ -5,7 +5,6 @@ import {
   LockKeyhole,
   Moon,
   Radio,
-  ShieldCheck,
   Sun,
   UserRoundSearch
 } from "lucide-react";
@@ -46,8 +45,8 @@ export function LoginPage() {
         {theme === "dark" ? <Sun className="h-4 w-4 text-blaze" /> : <Moon className="h-4 w-4 text-blaze" />}
       </Button>
 
-      <section className="login-stage mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-5xl flex-col items-center justify-center gap-6 py-8 sm:min-h-[calc(100vh-3rem)]">
-        <div className="login-auth-card relative w-full max-w-[43rem] overflow-hidden rounded-2xl border px-5 py-10 text-center sm:px-10 sm:py-14">
+      <section className="login-stage mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-5xl flex-col items-center justify-center py-8 sm:min-h-[calc(100vh-3rem)]">
+        <div className="login-auth-card relative w-full max-w-[46rem] overflow-hidden rounded-2xl border px-5 py-10 text-center sm:px-10 sm:py-14">
           <div className="login-card-glow" aria-hidden="true" />
           <div className="relative z-10">
             <div className="login-logo-stage mx-auto">
@@ -58,7 +57,7 @@ export function LoginPage() {
               Blaze Creator
               <span className="login-title-accent block">Intelligence</span>
             </h1>
-            <p className="login-kicker mt-6 text-[0.68rem] font-semibold uppercase tracking-[0.42em] text-muted">
+            <p className="login-kicker mt-5 text-[0.56rem] font-semibold uppercase tracking-[0.38em] text-muted sm:text-[0.62rem]">
               Creator Intelligence Platform
             </p>
 
@@ -86,11 +85,6 @@ export function LoginPage() {
             </div>
           </div>
         </div>
-
-        <p className="login-trust-line flex items-center justify-center gap-3 px-3 text-center text-sm text-muted sm:text-base">
-          <ShieldCheck className="h-5 w-5 shrink-0" />
-          <span>Your data is encrypted. Your channel stays yours.</span>
-        </p>
       </section>
     </main>
   );
