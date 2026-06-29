@@ -309,12 +309,12 @@ body {
   color: #151008;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.54),
-    0 0 0 1px rgba(255, 209, 90, 0.24),
-    0 14px 36px rgba(246, 199, 68, 0.26),
-    0 0 54px rgba(246, 199, 68, 0.2);
+    0 0 0 1px rgba(255, 209, 90, 0.18),
+    0 8px 22px rgba(0, 0, 0, 0.18);
 }
 
-.login-oauth-button:hover {
+.login-oauth-button:hover,
+.login-oauth-button:focus-visible {
   background:
     radial-gradient(ellipse 70% 120% at 22% 0%, rgba(255, 255, 255, 0.68), transparent 54%),
     linear-gradient(135deg, #ffe289 0%, #f7cd51 42%, #f0a014 100%);
